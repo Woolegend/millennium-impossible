@@ -30,5 +30,45 @@ export default class PlayingScene extends Phaser.Scene {
 
     // PlayingScene의 background를 설정합니다.
     setBackground(this, "background1");
+
+    this.m_cursorKeys = this.input.keyboard.createCursorKeys();
+  }
+
+  update() {
+    this.movePlayerManager();
+  }
+
+  movePlayerManager() {
+    const { left, right, up, down } = this.m_cursorKeys;
+
+    if (left.isDown || right.isDown || up.isDown || down.isDown) {
+      if (!this.m_player.m_moving) {
+        this.m_player.play("player_anim");
+      }
+      this.m_player.m_moving = true;
+    } else {
+      if (this.m_player.m_moving) {
+        this.m_player.play("player_idle");
+      }
+      this.m_player.m_moving = false;
+    }
+
+    // vector는 update마다 0으로 초기화 되기 때문에
+    // -1 ~ 1 범위를 벗어나지 않는다.
+    const vector = [0, 0];
+    if (left.isDown) {
+      vector[0] += -1;
+    }
+    if (right.isDown) {
+      vector[0] += 1;
+    }
+    if (up.isDown) {
+      vector[1] += -1;
+    }
+    if (down.isDown) {
+      vector[1] += 1;
+    }
+
+    this.m_player.move(vector);
   }
 }
